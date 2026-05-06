@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawing Board</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        canvas {
+            background: #000;
+            cursor: crosshair;
+            border: 2px solid #333;
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
+        }
+        .toolbar {
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+            background: #222;
+            width: 100%;
+            justify-content: center;
+            border-bottom: 2px solid #00f5d4;
+        }
+        input, button {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background: #00f5d4;
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <label>Rang: <input type="color" id="colorPicker" value="#00f5d4"></label>
+        <label>Qalinlik: <input type="range" id="sizePicker" min="1" max="50" value="5"></label>
+        <button onclick="clearCanvas()">TOZALASH</button>
+    </div>
+
+    <canvas id="paintCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const sizePicker = document.getElementById('sizePicker');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight - 70;
+
+        let painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function finishedPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!painting) return;
+            
+            ctx.lineWidth = sizePicker.value;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = colorPicker.value;
+
+            ctx.lineTo(e.clientX, e.clientY - 70);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY - 70);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', finishedPosition);
+        canvas.addEventListener('mousemove', draw);
+    </script>
+</body>
+</html>
